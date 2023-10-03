@@ -26,7 +26,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'id',
         'name',
         'author',
-        'description',
+        'text',
         'count_favorites',
     )
     readonly_fields = ('count_favorites',)
@@ -56,7 +56,7 @@ class FavoriteAdmin(admin.ModelAdmin):
 
 @admin.register(IngredientInRecipe)
 class IngredientInRecipe(admin.ModelAdmin):
-    list_display = ('recipe', 'ingredient', 'quantity',)
+    list_display = ('recipe', 'ingredient', 'amount',)
     search_fields = ('recipe', 'ingredient',)
     list_filter = ('recipe', 'ingredient',)
     empty_value_display = '-пусто-'

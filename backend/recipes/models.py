@@ -1,9 +1,11 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import UniqueConstraint
 
 User = get_user_model()
 
-MAX_LENGTH = 254
+MAX_LENGTH = 200
 MEAS_MAX_LENGTH = 24
 COLOR_MAX_LENGTH = 7
 
@@ -69,7 +71,7 @@ class Recipe(models.Model):
         'Картинка',
         upload_to='recipes/images/'
     )
-    description = models.TextField('Описание')
+    text = models.TextField('Описание')
     ingredients = models.ManyToManyField(
         Ingredient,
         through='IngredientInRecipe',
@@ -82,10 +84,16 @@ class Recipe(models.Model):
         verbose_name='Тэги'
     )
     cooking_time = models.PositiveIntegerField(
-        'Время готовки'
+        'Время готовки',
+        validators=[MinValueValidator(
+            1,
+            message='Минимальное время должно быть 1!'
+        )
+        ]
     )
 
     class Meta:
+        ordering = ('id',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
@@ -95,6 +103,7 @@ class Recipe(models.Model):
 
 
 class IngredientInRecipe(models.Model):
+    """Ingredient in recipe model."""
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
@@ -106,7 +115,7 @@ class IngredientInRecipe(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Ингредиент'
     )
-    quantity = models.PositiveIntegerField(
+    amount = models.PositiveIntegerField(
         'Количество'
     )
 
@@ -116,7 +125,9 @@ class IngredientInRecipe(models.Model):
 
     def __str__(self):
         """String representation."""
-        return f"{self.ingredient.name} in {self.recipe.name}"
+        return (f"{self.ingredient.name} "
+                f"{self.amount} in "
+                f"{self.recipe.name}")
 
 
 class Favorite(models.Model):
