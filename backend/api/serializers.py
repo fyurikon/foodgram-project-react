@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.db.models import F
 from django.shortcuts import get_object_or_404
-from djoser.serializers import UserCreateSerializer, UserSerializer
+from djoser.serializers import UserCreateSerializer
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField, IntegerField
 from rest_framework.serializers import (
@@ -317,12 +317,19 @@ class RecipeCreateSerializer(ModelSerializer):
 
     def update(self, instance, validated_data):
         """Update method."""
-        tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
+        ingredients = validated_data.pop('ingredients', None)
+        tags = validated_data.pop('tags', None)
         instance = super().update(instance, validated_data)
-        instance.tags.set(tags)
+
+        if ingredients is None or len(ingredients) == 0:
+            raise ValidationError('Ингредиенты обязательны для обновления')
+
+        if tags is None or len(tags) == 0:
+            raise ValidationError('Теги обязательны для обновления')
+
         instance.ingredients.clear()
         self.fill_amount(recipe=instance, ingredients=ingredients)
+        instance.tags.set(tags)
         instance.save()
 
         return instance
