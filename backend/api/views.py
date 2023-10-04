@@ -1,40 +1,26 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Sum, OuterRef, Exists
-from django.http import HttpResponse, Http404
+from django.db.models import Exists, OuterRef, Sum
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import SAFE_METHODS, AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.permissions import (
-    AllowAny,
-    IsAuthenticated,
-    SAFE_METHODS
-)
-from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from api.filters import IngredientFilter
 from api.pagination import CustomPagination
 from api.permissions import IsAdminOrAuthorOrReadOnly
-from api.serializers import (
-    TagSerializer,
-    IngredientSerializer,
-    FollowSerializer,
-    CustomUserSerializer,
-    RecipeCompactSerializer,
-    RecipeGetSerializer,
-    RecipeCreateSerializer
-)
-from recipes.models import (
-    Tag,
-    Ingredient,
-    Recipe,
-    Favorite,
-    ShoppingCart, 
-    IngredientInRecipe
-)
+from api.serializers import (CustomUserSerializer, FollowSerializer,
+                             IngredientSerializer, RecipeCompactSerializer,
+                             RecipeCreateSerializer, RecipeGetSerializer,
+                             TagSerializer)
+
+from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
+                            ShoppingCart, Tag)
 from users.models import Follow
 
 User = get_user_model()
@@ -174,7 +160,9 @@ class RecipeViewSet(ModelViewSet):
         return RecipeCreateSerializer
 
     def list(self, request, *args, **kwargs):
-        is_in_shopping_cart = self.request.query_params.get('is_in_shopping_cart')
+        is_in_shopping_cart = self.request.query_params.get(
+            'is_in_shopping_cart'
+        )
         is_favorited = self.request.query_params.get('is_favorited')
 
         if is_in_shopping_cart or is_favorited:
@@ -191,7 +179,9 @@ class RecipeViewSet(ModelViewSet):
         queryset = super().get_queryset()
         author = self.request.query_params.get('author')
         tags = self.request.query_params.getlist('tags')
-        is_in_shopping_cart = self.request.query_params.get('is_in_shopping_cart')
+        is_in_shopping_cart = self.request.query_params.get(
+            'is_in_shopping_cart'
+        )
         is_favorited = self.request.query_params.get('is_favorited')
 
         if author:
@@ -234,7 +224,6 @@ class RecipeViewSet(ModelViewSet):
 
         return queryset
 
-
     @action(
         detail=True,
         methods=('post', 'delete'),
@@ -245,7 +234,10 @@ class RecipeViewSet(ModelViewSet):
         recipe = get_object_or_400(Recipe, id=pk)
 
         if request.method == 'POST':
-            if Favorite.objects.filter(user=request.user, recipe=recipe).exists():
+            if Favorite.objects.filter(
+                    user=request.user,
+                    recipe=recipe
+            ).exists():
                 return Response(
                     {'errors': 'Рецепт уже в избранном!'},
                     status=status.HTTP_400_BAD_REQUEST
@@ -277,7 +269,10 @@ class RecipeViewSet(ModelViewSet):
         recipe = get_object_or_400(Recipe, id=pk)
 
         if request.method == 'POST':
-            if ShoppingCart.objects.filter(user=request.user, recipe=recipe).exists():
+            if ShoppingCart.objects.filter(
+                    user=request.user,
+                    recipe=recipe
+            ).exists():
                 return Response(
                     {'errors': 'Рецепт уже в корзине!'},
                     status=status.HTTP_400_BAD_REQUEST

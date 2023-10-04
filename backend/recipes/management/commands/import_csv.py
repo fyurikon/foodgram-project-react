@@ -2,6 +2,7 @@
 Import of ingredients from *.csv file to the database.
 """
 import csv
+
 from django.core.management.base import BaseCommand
 
 from recipes.models import Ingredient

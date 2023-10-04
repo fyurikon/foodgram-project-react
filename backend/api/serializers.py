@@ -6,14 +6,11 @@ from django.db.models import F
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import SerializerMethodField, IntegerField
-from rest_framework.serializers import (
-    ModelSerializer,
-    ImageField,
-    PrimaryKeyRelatedField
-)
+from rest_framework.fields import IntegerField, SerializerMethodField
+from rest_framework.serializers import (ImageField, ModelSerializer,
+                                        PrimaryKeyRelatedField)
 
-from recipes.models import Tag, Ingredient, Recipe, IngredientInRecipe
+from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
 from users.models import Follow
 
 User = get_user_model()
@@ -153,7 +150,11 @@ class FollowSerializer(CustomUserSerializer):
         recipes = obj.recipes.all()
         if limit:
             recipes = recipes[:int(limit)]
-        serializer = RecipeCompactSerializer(recipes, many=True, read_only=True)
+        serializer = RecipeCompactSerializer(
+            recipes,
+            many=True,
+            read_only=True
+        )
         return serializer.data
 
     def get_recipes_count(self, obj):
