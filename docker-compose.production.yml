@@ -31,7 +31,7 @@ services:
       - db
 
   nginx:
-    container-name: foodgram_gateway
+    container_name: foodgram_gateway
     restart: always
     image: nginx:1.23.3-alpine
     ports:
