@@ -9,14 +9,14 @@ services:
   db:
     image: postgres:13
     env_file:
-      - ./.env
+      - .env
     volumes:
       - pg_kdata:/var/lib/postgresql/data
 
   backend:
     image: fyuriko/foodgram_backend
     env_file:
-      - ./.env
+      - .env
     volumes:
       - static:/app/static/
       - media:/app/media/
