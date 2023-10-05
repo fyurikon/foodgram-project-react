@@ -24,7 +24,7 @@ services:
       - db
 
   frontend:
-    image: fyuriko/foodgram_backend
+    image: fyuriko/foodgram_frontend
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
