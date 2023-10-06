@@ -128,7 +128,10 @@ def get_object_or_400(klass, *args, **kwargs):
 class RecipeViewSet(ModelViewSet):
     """Recipe viewset."""
     queryset = Recipe.objects.select_related('author')
-    permission_classes = (IsAdminOrAuthorOrReadOnly,)
+    # queryset = Recipe.objects.perfetch_related('author')
+    permission_classes = (
+        IsAdminOrAuthorOrReadOnly,
+    )
     pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend,)
 
@@ -222,7 +225,7 @@ class RecipeViewSet(ModelViewSet):
             else:
                 queryset = queryset.filter(is_favorited=False)
 
-        return queryset
+        return queryset.distinct()
 
     @action(
         detail=True,

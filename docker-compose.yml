@@ -14,7 +14,7 @@ services:
     build: ./backend/
     env_file: .env
     volumes:
-      - static:/app/static
+      - static:/app/backend_static
       - media:/app/media/
       - ./data:/app/data/
     depends_on:
@@ -29,7 +29,7 @@ services:
 
   nginx:
     container_name: foodgram_proxy
-    image: nginx:1.19.3
+    build: ./nginx/
     ports:
       - 9000:80
     volumes:
