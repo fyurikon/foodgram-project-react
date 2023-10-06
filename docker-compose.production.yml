@@ -14,33 +14,27 @@ services:
     image: fyuriko/foodgram_backend
     env_file: .env
     volumes:
-      - static:/app/static/
-      - media:/app/media/
-      - ./data:/app/data/
+      - static:/backend_static
+      - media:/app/media
+      - data:/app/data
     depends_on:
       - db
 
   frontend:
     container_name: foodgram_front
     image: fyuriko/foodgram_frontend
+    command: cp -r /app/build/. /frontend_static/ 
     volumes:
-      - ./frontend/:/app/result_build/
-    depends_on:
-      - db
+      - static:/frontend_static 
 
   nginx:
     container_name: foodgram_proxy
-    image: nginx:1.19.3
+    image: fyuriko/foodgram_proxy
     ports:
       - 9000:80
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./frontend/build:/usr/share/nginx/html/
-      - ./docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
-      - ./docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
-      - static:/var/html/static/
-      - media:/var/html/media/
-      - data:/var/html/data/
+      - static:/staticfiles/
+      - media:/media
     depends_on:
       - backend
       - frontend
