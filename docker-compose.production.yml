@@ -1,29 +1,27 @@
-version: '3.3'
-
-volumes:
-  pg_kdata:
-  static:
-  media:
+version: '3'
 
 services:
   db:
+    container_name: foodgram_db
     image: postgres:13
-    env_file:
-      - ./.env
+    restart: always
+    env_file: .env
     volumes:
-      - pg_kdata:/var/lib/postgresql/data
+      - pg_fdata:/var/lib/postgresql/data
 
   backend:
+    container_name: foodgram_backend
     image: fyuriko/foodgram_backend
-    env_file:
-      - ./.env
+    env_file: .env
     volumes:
       - static:/app/static/
       - media:/app/media/
+      - ./data:/app/data/
     depends_on:
       - db
 
   frontend:
+    container_name: foodgram_front
     image: fyuriko/foodgram_frontend
     volumes:
       - ./frontend/:/app/result_build/
@@ -31,9 +29,8 @@ services:
       - db
 
   nginx:
-    container_name: foodgram_gateway
-    image: nginx:1.23.3-alpine
-    restart: always
+    container_name: foodgram_proxy
+    image: nginx:1.19.3
     ports:
       - 9000:80
     volumes:
@@ -43,6 +40,14 @@ services:
       - ./docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
       - static:/var/html/static/
       - media:/var/html/media/
+      - data:/var/html/data/
     depends_on:
       - backend
       - frontend
+
+volumes:
+  pg_fdata:
+  static:
+  media:
+  data:
+...
