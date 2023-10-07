@@ -1,0 +1,4 @@
+IP: 51.250.109.37;
+name_foodgram: https://fyurikitty.ddns.net;
+login: admin@admin.com;
+password: admin.;
