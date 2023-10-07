@@ -128,7 +128,7 @@ def get_object_or_400(klass, *args, **kwargs):
 class RecipeViewSet(ModelViewSet):
     """Recipe viewset."""
     queryset = Recipe.objects.select_related('author')
-    # queryset = Recipe.objects.perfetch_related('author')
+
     permission_classes = (
         IsAdminOrAuthorOrReadOnly,
     )

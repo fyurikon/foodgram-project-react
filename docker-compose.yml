@@ -24,22 +24,18 @@ services:
     container_name: foodgram_front
     env_file: .env
     build: ./frontend/
+    command: cp -r /app/build/. /frontend_static/
     volumes:
-      - ./frontend/:/app/result_build/
+      - static:/frontend_static
 
   nginx:
     container_name: foodgram_proxy
-    build: ./nginx/
+    build: ./infra/
     ports:
       - 9000:80
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./frontend/build:/usr/share/nginx/html/
-      - ./docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
-      - ./docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
-      - static:/var/html/static/
-      - media:/var/html/media/
-      - data:/var/html/data/
+      - static:/staticfiles/
+      - media:/app/media/
     depends_on:
       - backend
       - frontend
