@@ -1,7 +1,7 @@
 import logging
 
 from django.contrib.auth import get_user_model
-from django.db.models import Exists, OuterRef, Sum
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -245,7 +245,9 @@ class RecipeViewSet(ModelViewSet):
         ).annotate(amount=Sum('amount'))
 
         shopping_list = [
-            f'- {ingredient["ingredient__name"]} ({ingredient["ingredient__measurement_unit"]}) - {ingredient["amount"]}'
+            (f'- {ingredient["ingredient__name"]} '
+             f'({ingredient["ingredient__measurement_unit"]}) - '
+             f'{ingredient["amount"]}')
             for ingredient in ingredients
         ]
         shopping_list = '\n'.join(shopping_list)
