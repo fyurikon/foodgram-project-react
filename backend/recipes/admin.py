@@ -33,7 +33,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
     @admin.display(description='Число добавлений в избранное')
     def count_favorites(self, obj):
-        return obj.favorites.count()
+        return obj.favorite_set.count()
 
 
 @admin.register(ShoppingCart)
