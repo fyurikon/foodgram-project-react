@@ -31,7 +31,6 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfCookieMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -113,6 +112,7 @@ DJOSER = {
     "HIDE_USERS": False,
 }
 
+CSRF_TRUSTED_ORIGINS = ['https://fyurikitty.ddns.net']
 
 LANGUAGE_CODE = 'en-us'
 
