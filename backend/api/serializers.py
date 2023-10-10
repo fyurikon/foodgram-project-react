@@ -259,22 +259,23 @@ class RecipeCreateSerializer(ModelSerializer):
 
         return value
 
-    def validate_ingredients(self, value):
-        """Validate ingredients."""
-        if not value:
-            raise ValidationError('Нет ингредиентов! '
-                                  'Добавьте хотя-бы один!')
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        ingredients = attrs.get('ingredients', [])
+
+        if not ingredients:
+            raise ValidationError('Нет ингредиентов! Добавьте хотя бы один!')
 
         ingredients_set = set()
 
-        for item in value:
+        for item in ingredients:
             ingredient = get_object_or_404(Ingredient, id=item['id'])
             if ingredient in ingredients_set:
-                raise ValidationError('Ингридиенты не '
-                                      'должны повторяться!')
+                raise ValidationError('Ингредиенты не должны повторяться!')
             ingredients_set.add(ingredient)
 
-        return value
+        return attrs
 
     def fill_amount(self, ingredients, recipe):
         """Fill amount for the ingredient in the recipe."""

@@ -1,5 +1,6 @@
 from colorfield.fields import ColorField
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
@@ -31,6 +32,18 @@ class Tag(models.Model):
         max_length=MAX_LENGTH,
         unique=True
     )
+
+    def clean(self):
+        super().clean()
+        existing_tags = Tag.objects.filter(color=self.color)
+
+        if self.pk:
+            existing_tags = existing_tags.exclude(pk=self.pk)
+
+        if existing_tags.exists():
+            raise ValidationError(
+                "Тэг с таким цветом уже существует."
+            )
 
     class Meta:
         verbose_name = 'Тэг'
@@ -80,7 +93,7 @@ class Recipe(models.Model):
         Ingredient,
         through='IngredientInRecipe',
         related_name='recipes',
-        verbose_name='Ингредиенты',
+        verbose_name='Ингредиенты'
     )
     tags = models.ManyToManyField(
         Tag,
@@ -103,6 +116,7 @@ class Recipe(models.Model):
         ordering = ('-id',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
+        unique_together = ('name', 'text')
 
     def __str__(self):
         """String representation."""
@@ -133,6 +147,17 @@ class IngredientInRecipe(models.Model):
             )
         )
     )
+
+    def clean(self):
+        existing_ingredients = IngredientInRecipe.objects.filter(
+            recipe=self.recipe, ingredient=self.ingredient
+        )
+        if existing_ingredients.exists():
+            raise ValidationError('Такой ингредиент уже добавлен в рецепт.')
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Ингредиент в рецепте'
@@ -174,7 +199,7 @@ class Favorite(BaseItem):
     def __str__(self):
         """String representation."""
         return (f'{self.user.username[:STR_TEXT_LIMIT]} add to '
-                f'favorite {self.recipe.title[:STR_TEXT_LIMIT]}')
+                f'favorite {self.recipe.text[:STR_TEXT_LIMIT]}')
 
 
 class ShoppingCart(BaseItem):
@@ -187,4 +212,4 @@ class ShoppingCart(BaseItem):
     def __str__(self):
         """String representation."""
         return (f'{self.user.username[:STR_TEXT_LIMIT]} add to '
-                f'cart {self.recipe.title[:STR_TEXT_LIMIT]}')
+                f'cart {self.recipe.text[:STR_TEXT_LIMIT]}')

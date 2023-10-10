@@ -114,7 +114,7 @@ DJOSER = {
 
 CSRF_TRUSTED_ORIGINS = ['https://fyurikitty.ddns.net']
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 

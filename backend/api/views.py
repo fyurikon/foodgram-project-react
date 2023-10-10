@@ -8,6 +8,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import SAFE_METHODS, AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
@@ -136,12 +137,21 @@ class RecipeViewSet(ModelViewSet):
     def create(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response(
-                {'error': 'Authentication credentials were not provided.'},
+                {'error': 'Необходимо авторизоваться!'},
                 status=status.HTTP_401_UNAUTHORIZED
             )
 
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except ValidationError as e:
+            error_messages = []
+            for field, errors in e.detail.items():
+                error_messages.extend(errors)
+            return Response(
+                {'error': error_messages},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)

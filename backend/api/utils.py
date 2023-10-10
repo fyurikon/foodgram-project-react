@@ -12,6 +12,4 @@ def get_object_or_bad_request(klass, *args, **kwargs):
     try:
         return get_object_or_404(klass, *args, **kwargs)
     except Http404:
-        raise ValidationError(
-            {'not_exist': 'Объекта не существует!'}
-        )
+        raise ValidationError('Объекта не существует!')

@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
                      ShoppingCart, Tag)
+from .forms import RecipeForm
 
 
 @admin.register(Tag)
@@ -20,6 +21,8 @@ class IngredientAdmin(admin.ModelAdmin):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
+    form = RecipeForm
+
     list_display = (
         'id',
         'name',
