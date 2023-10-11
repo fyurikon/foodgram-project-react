@@ -1,8 +1,9 @@
 from django.contrib import admin
 
-from .models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
-                     ShoppingCart, Tag)
-from .forms import RecipeForm
+from .models import (Favorite, Ingredient, IngredientInRecipe,
+                     Recipe, ShoppingCart, Tag)
+from .forms import (RecipeForm, IngredientForm,
+                    IngredientInRecipeFormSet)
 
 
 @admin.register(Tag)
@@ -14,14 +15,24 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
+    form = IngredientForm
     list_display = ('name', 'measurement_unit',)
     search_fields = ('name',)
     list_filter = ('name',)
 
 
+class IngredientInRecipeInline(admin.TabularInline):
+    """Inline form for IngredientInRecipe."""
+    model = IngredientInRecipe
+    formset = IngredientInRecipeFormSet
+    extra = 1
+    can_delete = True
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     form = RecipeForm
+    inlines = [IngredientInRecipeInline]
 
     list_display = (
         'id',
@@ -56,7 +67,7 @@ class FavoriteAdmin(admin.ModelAdmin):
 
 
 @admin.register(IngredientInRecipe)
-class IngredientInRecipe(admin.ModelAdmin):
+class IngredientInRecipeAdmin(admin.ModelAdmin):
     list_display = ('recipe', 'ingredient', 'amount',)
     search_fields = ('recipe', 'ingredient',)
     list_filter = ('recipe', 'ingredient',)

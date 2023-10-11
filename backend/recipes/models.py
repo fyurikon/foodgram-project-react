@@ -35,7 +35,9 @@ class Tag(models.Model):
 
     def clean(self):
         super().clean()
-        existing_tags = Tag.objects.filter(color=self.color)
+        color = self.color.upper()
+
+        existing_tags = Tag.objects.filter(color__iexact=color)
 
         if self.pk:
             existing_tags = existing_tags.exclude(pk=self.pk)
@@ -48,6 +50,10 @@ class Tag(models.Model):
     class Meta:
         verbose_name = 'Тэг'
         verbose_name_plural = 'Тэги'
+
+    def save(self, *args, **kwargs):
+        self.color = self.color.upper()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         """String representation."""
@@ -195,6 +201,7 @@ class Favorite(BaseItem):
     class Meta:
         verbose_name = 'Избранный'
         verbose_name_plural = 'Избранные'
+        unique_together = ('user', 'recipe')
 
     def __str__(self):
         """String representation."""
@@ -208,6 +215,7 @@ class ShoppingCart(BaseItem):
     class Meta:
         verbose_name = 'Корзина'
         verbose_name_plural = 'Корзины'
+        unique_together = ('user', 'recipe')
 
     def __str__(self):
         """String representation."""
