@@ -121,5 +121,14 @@ EOF
 ```
 sudo docker compose -f docker-compose.production.yml exec backend python manage.py import_csv data/ingredients.csv
 ```
+Также не забываем положить API документацию в папку docs в папке проекта.
+
+Если положили документацию уже после деплоя, не забывайте перезапустить контейнер.
+```
+sudo docker compose -f docker-compose.production.yml down
+```
+```
+sudo docker compose -f docker-compose.production.yml up --build
+```
 
 Сайт готов, можно пользоваться.
