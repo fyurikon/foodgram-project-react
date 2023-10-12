@@ -25,6 +25,19 @@ class RecipeForm(forms.ModelForm):
         model = Recipe
         fields = '__all__'
 
+    def clean(self):
+        cleaned_data = super().clean()
+        ingredients = cleaned_data.get('ingredients')
+
+        if ingredients:
+            ingredient_ids = [ingredient.id for ingredient in ingredients]
+            if len(set(ingredient_ids)) != len(ingredient_ids):
+                raise forms.ValidationError(
+                    'Рецепт содержит повторяющиеся ингредиенты.'
+                )
+
+        return cleaned_data
+
 
 class CustomIngredientInRecipeFormSet(BaseInlineFormSet):
     """Custom formset for ingredient in recipe."""

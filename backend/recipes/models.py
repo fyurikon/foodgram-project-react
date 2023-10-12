@@ -154,20 +154,10 @@ class IngredientInRecipe(models.Model):
         )
     )
 
-    def clean(self):
-        existing_ingredients = IngredientInRecipe.objects.filter(
-            recipe=self.recipe, ingredient=self.ingredient
-        )
-        if existing_ingredients.exists():
-            raise ValidationError('Такой ингредиент уже добавлен в рецепт.')
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
-
     class Meta:
         verbose_name = 'Ингредиент в рецепте'
         verbose_name_plural = 'Ингредиенты в рецептах'
+        unique_together = ('recipe', 'ingredient')
 
     def __str__(self):
         """String representation."""

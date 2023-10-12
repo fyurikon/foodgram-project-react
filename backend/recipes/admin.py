@@ -26,7 +26,7 @@ class IngredientInRecipeInline(admin.TabularInline):
     model = IngredientInRecipe
     formset = IngredientInRecipeFormSet
     extra = 1
-    can_delete = True
+    can_delete = False
 
 
 @admin.register(Recipe)
